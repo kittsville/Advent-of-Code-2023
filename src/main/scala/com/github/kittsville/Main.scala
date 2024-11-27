@@ -6,7 +6,7 @@ object Main extends App {
   println("Puzzle input:")
 
   val input = multilineInput()
-  val output = Day1Solution.calibrationSum(input)
+  val output = Day2Solution.gamePossibleIds(input)
 
   println("Solution:")
   println(output)
