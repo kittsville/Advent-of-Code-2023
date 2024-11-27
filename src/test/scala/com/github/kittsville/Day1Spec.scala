@@ -16,6 +16,11 @@ class Day1Spec extends munit.FunSuite {
     assertEquals(Day1Solution.calibrationSum(input), 34)
   }
 
+  test("parse digits spelled with words") {
+    val input = """afour36derp54fiveb"""
+    assertEquals(Day1Solution.calibrationSum(input), 45)
+  }
+
   test("sum multiple rows") {
     val input = """a16derp52b
                   |3bc4""".stripMargin
