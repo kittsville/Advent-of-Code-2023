@@ -21,6 +21,11 @@ class Day1Spec extends munit.FunSuite {
     assertEquals(Day1Solution.calibrationSum(input), 45)
   }
 
+  test("prioritise digits spelled as words that start sooner in the line") {
+    val input = """twone4"""
+    assertEquals(Day1Solution.calibrationSum(input), 24)
+  }
+
   test("sum multiple rows") {
     val input = """a16derp52b
                   |3bc4""".stripMargin
