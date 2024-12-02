@@ -37,7 +37,6 @@ object Day2Solution extends Day2 {
     .toScala(LazyList)
     .foldLeft(0)((sum, line) => {
       val mcc = minimumCubesForGame(line)
-      println(mcc)
       val power = mcc.red * mcc.green * mcc.blue
 
       sum + power
