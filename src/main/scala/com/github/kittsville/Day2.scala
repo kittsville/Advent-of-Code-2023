@@ -62,6 +62,7 @@ object Day2Solution extends Day2 {
 trait Day2 {
   def gamePossibleIds(games: String): Int
   def validGame(gameResult: String): Boolean
+  def summedPowerOfGameCubes(games: String): Int
 }
 
 case class Cube(name: String, available: Int)
