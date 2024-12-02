@@ -6,7 +6,7 @@ object Main extends App {
   println("Puzzle input:")
 
   val input = multilineInput()
-  val output = Day3Solution.summedPartNumbers(input)
+  val output = Day3Solution.summedGearRatios(input)
 
   println("Solution:")
   println(output)

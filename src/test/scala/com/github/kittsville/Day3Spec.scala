@@ -57,4 +57,29 @@ class Day3Spec extends munit.FunSuite {
                   |1.. """.stripMargin
     assertEquals(Day3Solution.summedPartNumbers(input), 2)
   }
+
+  test("Returns nothing when there's no gears with two labels") {
+    assertEquals(Day3Solution.summedGearRatios("467..114.."), 0)
+  }
+
+  test("Returns a single gear ratio when there's no gears with two labels") {
+    val input = """2..
+                  |*..
+                  |2..""".stripMargin
+    assertEquals(Day3Solution.summedGearRatios(input), 4)
+  }
+
+  test("Calculates the sum of multiple gear ratios") {
+    val input = """467..114..
+                  |...*......
+                  |..35..633.
+                  |......#...
+                  |617*......
+                  |.....+.58.
+                  |..592.....
+                  |......755.
+                  |...$.*....
+                  |.664.598..""".stripMargin
+    assertEquals(Day3Solution.summedGearRatios(input), 467835)
+  }
 }
