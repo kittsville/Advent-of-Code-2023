@@ -32,6 +32,32 @@ object Day2Solution extends Day2 {
   private val maxRed = 12
   private val maxGreen = 13
   private val maxBlue = 14
+
+  def summedPowerOfGameCubes(games: String): Int = games.lines
+    .toScala(LazyList)
+    .foldLeft(0)((sum, line) => {
+      val mcc = minimumCubesForGame(line)
+      println(mcc)
+      val power = mcc.red * mcc.green * mcc.blue
+
+      sum + power
+    })
+
+  def minimumCubesForGame(game: String): MinCubeCount = game match {
+    case gameParser(_, gameResult) => gameResult.split("; ").map(parseCubeResult).reduce((a, b) => a.combine(b))
+    case _                         => throw BadGameInput(game)
+  }
+
+  def parseCubeResult(drawResult: String): MinCubeCount =
+    drawResult.split(", ").map(parseDrawResult).reduce((a, b) => a.combine(b))
+
+  private def parseDrawResult(cubeResult: String): MinCubeCount =
+    cubeResult.split(' ').toList match {
+      case found :: "red" :: Nil   => MinCubeCount(red = found.toInt)
+      case found :: "green" :: Nil => MinCubeCount(green = found.toInt)
+      case found :: "blue" :: Nil  => MinCubeCount(blue = found.toInt)
+      case _                       => throw BadGameInput(cubeResult)
+    }
 }
 
 trait Day2 {
@@ -40,3 +66,15 @@ trait Day2 {
 }
 
 case class Cube(name: String, available: Int)
+
+case class BadGameInput(input: String) extends IllegalArgumentException(s"Bad game input: $input")
+
+case class MinCubeCount(red: Int = 0, green: Int = 0, blue: Int = 0) {
+  def combine(that: MinCubeCount): MinCubeCount = {
+    MinCubeCount(
+      red = Math.max(this.red, that.red),
+      green = Math.max(this.green, that.green),
+      blue = Math.max(this.blue, that.blue)
+    )
+  }
+}

@@ -55,4 +55,34 @@ class Day2Spec extends munit.FunSuite {
                   |Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green""".stripMargin
     assertEquals(Day2Solution.gamePossibleIds(input), 8)
   }
+
+  test("parse the minimum number of cubes required for a result") {
+    assertEquals(Day2Solution.parseCubeResult("10 red, 13 green, 4 blue"), MinCubeCount(red = 10, green = 13, blue = 4))
+  }
+
+  test("parse the minimum number of cubes required for a result without all cube colours") {
+    assertEquals(Day2Solution.parseCubeResult("10 red"), MinCubeCount(red = 10, green = 0, blue = 0))
+  }
+
+  test("calculate the minimum number of each cube colours required for a game") {
+    assertEquals(
+      Day2Solution.minimumCubesForGame("Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"),
+      MinCubeCount(red = 4, green = 2, blue = 6)
+    )
+  }
+
+  test(
+    "calculate the minimum number of each cube colours required for a game multipled together"
+  ) {
+    val input = """Game 1: 1 green, 2 blue, 3 red"""
+    assertEquals(Day2Solution.summedPowerOfGameCubes(input), 6)
+  }
+
+  test(
+    "calculate the minimum number of each cube colours required for a game multipled together, then totalling every game's result"
+  ) {
+    val input = """Game 1: 1 green, 2 blue, 3 red
+                  |Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue""".stripMargin
+    assertEquals(Day2Solution.summedPowerOfGameCubes(input), 18)
+  }
 }
