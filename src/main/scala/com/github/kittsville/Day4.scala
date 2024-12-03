@@ -6,20 +6,47 @@ object Day4Solution {
   def points(scratchcards: String): Int =
     scratchcards.lines
       .toScala(LazyList)
-      .foldLeft(0)((sum, line) =>
-        sum + (line.halve(':')._2.trim().halve('|') match {
-          case (rawChosenNumbers, rawWinningNumbers) =>
-            parseNumbers(rawChosenNumbers).foldLeft(0)(countIfWinningNumber(parseNumbers(rawWinningNumbers).toSet))
-        })
-      )
+      .foldLeft(0)((sum, line) => sum + scoreWins(singleGameWins(line)._2))
 
-  private def countIfWinningNumber(winningNumbers: Set[Int])(total: Int, chosenNumber: Int): Int = {
-    (total, winningNumbers.contains(chosenNumber)) match {
-      case (0, true)  => 1
-      case (t, true)  => t * 2
-      case (t, false) => t
+  def winningScratchcards(scratchcards: String): Int = {
+    println(scratchcards)
+    val wins = scratchcards.linesIterator.map(singleGameWins).toMap
+
+    wins.keys
+      .map(checkGameId => countScratchcardWins(wins, checkGameId))
+      .foldLeft(0)(_ + _)
+  }
+
+  private def countScratchcardWins(wins: Map[Int, Int], checkGameId: Int): Int = {
+    val singleGameWins = wins(checkGameId)
+
+    if (singleGameWins == 0) {
+      1
+    } else {
+      val start = checkGameId + 1
+      val end = checkGameId + singleGameWins
+
+      val res = 1 + (start to end).map(newGameId => countScratchcardWins(wins, newGameId)).foldLeft(0)(_ + _)
+      res
     }
   }
+
+  private def singleGameWins(rawGame: String): (Int, Int) = rawGame.halve(':') match {
+    case (meta, results) =>
+      (
+        meta.stripPrefix("Card").trim().toInt,
+        results.trim().halve('|') match {
+          case (rawChosenNumbers, rawWinningNumbers) =>
+            parseNumbers(rawChosenNumbers).count(parseNumbers(rawWinningNumbers).toSet.contains)
+        }
+      )
+  }
+
+  private def scoreWins(wins: Int): Int =
+    wins match {
+      case 0 => 0
+      case w => Math.pow(2, w - 1).toInt
+    }
 
   private def parseNumbers(text: String): List[Int] = text.split(" ").flatMap(_.toIntOption).toList
 
@@ -37,4 +64,5 @@ object Day4Solution {
 
 trait Day4 {
   def points(scratchcards: String): Int
+  def winningScratchcards(scratchcards: String): Int
 }
