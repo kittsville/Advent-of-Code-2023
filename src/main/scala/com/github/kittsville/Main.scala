@@ -6,7 +6,8 @@ object Main extends App {
   println("Puzzle input:")
 
   val input = multilineInput(limit = 2)
-  val output = Day5Solution.closestLocation(input)
+  println("Input captured, processing...")
+  val output = Day5Solution.closestLocationOfRanges(input)
 
   println("Solution:")
   println(output)

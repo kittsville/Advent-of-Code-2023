@@ -1,20 +1,47 @@
 package com.github.kittsville
 
 object Day5Solution {
-  def closestLocation(almanac: String): Long = {
+  def closestLocationOfRanges(almanac: String): Long = {
     val lines = almanac.linesIterator.toList
-    val rawSeeds = lines.head.split(':').tail.head.strip().split(' ').map(_.toLong).toList
+    val seeds = lines.head
+      .split(':')
+      .tail
+      .head
+      .strip()
+      .split(' ')
+      .map(_.toLong)
+      .toList
+      .sliding(2, 2)
+      .toStream
+      .collect { case List(start, length) =>
+        seedsFromRange(start, length)
+      }
+      .flatten
     val rawMappings = lines.tail.mkString("\n")
     val mappingBlocks = parseMappings(rawMappings)
 
-    rawSeeds.map(seed => convert(seed.toString, rawMappings)).reduce((a, b) => Math.min(a, b))
+    closestLocation(seeds, mappingBlocks)
   }
 
-  def convert(seed: String, mappings: String): Long =
-    convert(seed, parseMappings(mappings))
+  def closestLocation(almanac: String): Long = {
+    val lines = almanac.linesIterator.toList
+    val seeds = lines.head.split(':').tail.head.strip().split(' ').map(_.toLong).toList
+    val rawMappings = lines.tail.mkString("\n")
+    val mappingBlocks = parseMappings(rawMappings)
 
-  private def convert(seed: String, mappingBlocks: Seq[MappingBlock]): Long =
-    mappingBlocks.foldLeft(seed.toLong)((value, block) =>
+    closestLocation(seeds, mappingBlocks)
+  }
+
+  private def seedsFromRange(start: Long, length: Long): Stream[Long] = Range.Long(start, start + length, 1).toStream
+
+  private def closestLocation(seeds: Iterable[Long], mappingBlocks: Seq[MappingBlock]): Long =
+    seeds.map(seed => convert(seed, mappingBlocks)).reduce((a, b) => Math.min(a, b))
+
+  def convert(seed: String, mappings: String): Long =
+    convert(seed.toLong, parseMappings(mappings))
+
+  private def convert(seed: Long, mappingBlocks: Seq[MappingBlock]): Long =
+    mappingBlocks.foldLeft(seed)((value, block) =>
       block.mappings.flatMap(_.mapValue(value)).headOption.getOrElse(value)
     )
 
@@ -56,4 +83,5 @@ case class InvalidMapping(raw: String)
 trait Day5 {
   def convert(seed: String, mappings: String): String
   def closestLocation(almanac: String): Long
+  def closestLocationOfRanges(almanac: String): Long
 }
