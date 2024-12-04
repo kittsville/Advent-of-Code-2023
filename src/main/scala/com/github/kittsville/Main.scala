@@ -5,17 +5,18 @@ import scala.io.StdIn
 object Main extends App {
   println("Puzzle input:")
 
-  val input = multilineInput()
-  val output = Day4Solution.winningScratchcards(input)
+  val input = multilineInput(limit = 2)
+  val output = Day5Solution.closestLocation(input)
 
   println("Solution:")
   println(output)
 
-  private def multilineInput(): String = {
+  private def multilineInput(limit: Int = 1, count: Int = 0): String = {
     val input = StdIn.readLine()
     input match {
-      case ""       => ""
-      case nonEmpty => s"$input\n${multilineInput()}"
+      case "" if count < limit => s"\n\n${multilineInput(limit, count + 1)}"
+      case ""                  => ""
+      case nonEmpty            => s"$input\n${multilineInput(limit, 0)}"
     }
   }
 }
