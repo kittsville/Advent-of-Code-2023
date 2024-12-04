@@ -9,26 +9,24 @@ object Day4Solution {
       .foldLeft(0)((sum, line) => sum + scoreWins(singleGameWins(line)._2))
 
   def winningScratchcards(scratchcards: String): Int = {
-    println(scratchcards)
     val wins = scratchcards.linesIterator.map(singleGameWins).toMap
+    val accumulator = wins.keys.map(gameId => gameId -> 0).toMap
 
-    wins.keys
-      .map(checkGameId => countScratchcardWins(wins, checkGameId))
+    wins.keys.toList.sorted
+      .foldLeft(accumulator)((ac1, gameId) => {
+        val scratchcardsWon = wins(gameId)
+
+        val start = gameId + 1
+        val end = gameId + scratchcardsWon
+
+        val ac2 = ac1 ++ Map(gameId -> (ac1(gameId) + 1))
+        val multiplier = ac2(gameId)
+        val a3 = (start to end).foldLeft(ac2)((ac3, gId2) => ac3 ++ Map(gId2 -> (ac3(gId2) + multiplier)))
+
+        a3
+      })
+      .values
       .foldLeft(0)(_ + _)
-  }
-
-  private def countScratchcardWins(wins: Map[Int, Int], checkGameId: Int): Int = {
-    val singleGameWins = wins(checkGameId)
-
-    if (singleGameWins == 0) {
-      1
-    } else {
-      val start = checkGameId + 1
-      val end = checkGameId + singleGameWins
-
-      val res = 1 + (start to end).map(newGameId => countScratchcardWins(wins, newGameId)).foldLeft(0)(_ + _)
-      res
-    }
   }
 
   private def singleGameWins(rawGame: String): (Int, Int) = rawGame.halve(':') match {
