@@ -24,39 +24,6 @@ object Day5Solution {
     mappingBlocks.foldLeft(seeds)(applyMappings).map(_.start).min
   }
 
-  def closestLocation(almanac: String): Long = {
-    val lines = almanac.linesIterator.toList
-    val seeds = lines.head.split(':').tail.head.strip().split(' ').map(_.toLong).toList
-    val rawMappings = lines.tail.mkString("\n")
-    val mappingBlocks = parseMappings(rawMappings)
-
-    closestLocation(seeds, mappingBlocks)
-  }
-
-  private def seedsFromRange(start: Long, length: Long): NumericRange[Long] =
-    Range.Long.inclusive(start, start + length - 1, 1)
-
-  private def closestLocation(seeds: Iterable[Long], mappingBlocks: Seq[MappingBlock]): Long =
-    seeds.map(seed => convert(seed, mappingBlocks)).reduce((a, b) => Math.min(a, b))
-
-  def convert(seed: String, mappings: String): Long =
-    convert(seed.toLong, parseMappings(mappings))
-
-  private def convert(seed: Long, mappingBlocks: Seq[MappingBlock]): Long =
-    mappingBlocks.foldLeft(seed)((value, block) =>
-      block.mappings.flatMap(_.mapValue(value)).headOption.getOrElse(value)
-    )
-
-  private def parseMappings(mappings: String): Seq[MappingBlock] = {
-    mappings
-      .split("\n\n")
-      .map(_.split(":"))
-      .collect { case Array(mappingName, rawRanges) =>
-        MappingBlock(mappingName, rawRanges.strip().linesIterator.filterNot(_ == "").map(Mapping.apply).toList)
-      }
-      .toList
-  }
-
   def applyMappings(seedRanges: Seq[NumericRange[Long]], block: RangeBlock): Seq[NumericRange[Long]] = {
     val (unmodifiedSeedRanges, newSeedRanges) =
       block.mappingRanges.foldLeft((seedRanges, Seq.empty[NumericRange[Long]])) {
@@ -105,8 +72,38 @@ object Day5Solution {
     } else (Seq(seedRange), Seq.empty[NumericRange[Long]])
   }
 
-  private def shiftRange(range: NumericRange[Long], diff: Long): NumericRange[Long] =
-    (range.start + diff to range.end + diff)
+  def closestLocation(almanac: String): Long = {
+    val lines = almanac.linesIterator.toList
+    val seeds = lines.head.split(':').tail.head.strip().split(' ').map(_.toLong).toList
+    val rawMappings = lines.tail.mkString("\n")
+    val mappingBlocks = parseMappings(rawMappings)
+
+    closestLocation(seeds, mappingBlocks)
+  }
+
+  private def seedsFromRange(start: Long, length: Long): NumericRange[Long] =
+    Range.Long.inclusive(start, start + length - 1, 1)
+
+  private def closestLocation(seeds: Iterable[Long], mappingBlocks: Seq[MappingBlock]): Long =
+    seeds.map(seed => convert(seed, mappingBlocks)).reduce((a, b) => Math.min(a, b))
+
+  def convert(seed: String, mappings: String): Long =
+    convert(seed.toLong, parseMappings(mappings))
+
+  private def convert(seed: Long, mappingBlocks: Seq[MappingBlock]): Long =
+    mappingBlocks.foldLeft(seed)((value, block) =>
+      block.mappings.flatMap(_.mapValue(value)).headOption.getOrElse(value)
+    )
+
+  private def parseMappings(mappings: String): Seq[MappingBlock] = {
+    mappings
+      .split("\n\n")
+      .map(_.split(":"))
+      .collect { case Array(mappingName, rawRanges) =>
+        MappingBlock(mappingName, rawRanges.strip().linesIterator.filterNot(_ == "").map(Mapping.apply).toList)
+      }
+      .toList
+  }
 }
 
 case class RangeBlock(name: String, mappingRanges: Seq[MappingRange])
