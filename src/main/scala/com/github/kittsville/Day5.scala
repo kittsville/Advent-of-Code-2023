@@ -1,5 +1,7 @@
 package com.github.kittsville
 
+import scala.collection.immutable.NumericRange
+
 object Day5Solution {
   def closestLocationOfRanges(almanac: String): Long = {
     val lines = almanac.linesIterator.toList
@@ -12,15 +14,14 @@ object Day5Solution {
       .map(_.toLong)
       .toList
       .sliding(2, 2)
-      .toStream
       .collect { case List(start, length) =>
         seedsFromRange(start, length)
       }
-      .flatten
+      .toSeq
     val rawMappings = lines.tail.mkString("\n")
-    val mappingBlocks = parseMappings(rawMappings)
+    val mappingBlocks = parseMappings(rawMappings).map(RangeBlock.apply)
 
-    closestLocation(seeds, mappingBlocks)
+    mappingBlocks.foldLeft(seeds)(applyMappings).map(_.start).min
   }
 
   def closestLocation(almanac: String): Long = {
@@ -32,7 +33,8 @@ object Day5Solution {
     closestLocation(seeds, mappingBlocks)
   }
 
-  private def seedsFromRange(start: Long, length: Long): Stream[Long] = Range.Long(start, start + length, 1).toStream
+  private def seedsFromRange(start: Long, length: Long): NumericRange[Long] =
+    Range.Long.inclusive(start, start + length - 1, 1)
 
   private def closestLocation(seeds: Iterable[Long], mappingBlocks: Seq[MappingBlock]): Long =
     seeds.map(seed => convert(seed, mappingBlocks)).reduce((a, b) => Math.min(a, b))
@@ -54,6 +56,74 @@ object Day5Solution {
       }
       .toList
   }
+
+  def applyMappings(seedRanges: Seq[NumericRange[Long]], block: RangeBlock): Seq[NumericRange[Long]] = {
+    val (unmodifiedSeedRanges, newSeedRanges) =
+      block.mappingRanges.foldLeft((seedRanges, Seq.empty[NumericRange[Long]])) {
+        case ((sR, nSR), range) => {
+          sR.map(applyMappingToSeedRange(range))
+            .foldLeft((Seq.empty[NumericRange[Long]], nSR)) { case ((lUSR, lMSR), (rUSR, rMSR)) =>
+              (lUSR ++ rUSR, lMSR ++ rMSR)
+            }
+        }
+      }
+    unmodifiedSeedRanges ++ newSeedRanges
+  }
+
+  def applyMappingToSeedRange(mappingRange: MappingRange)(
+      seedRange: NumericRange[Long]
+  ): (Seq[NumericRange[Long]], Seq[NumericRange[Long]]) = {
+
+    if (seedRange.start == mappingRange.from.start && seedRange.end == mappingRange.from.end) {
+      val unmodified = Seq.empty[NumericRange[Long]]
+      val modifed = Seq((seedRange.start + mappingRange.diff to seedRange.end + mappingRange.diff))
+
+      (unmodified, modifed)
+    } else if (seedRange.contains(mappingRange.from.start) && seedRange.contains(mappingRange.from.end)) {
+      val unmodified = Seq(
+        (seedRange.start to mappingRange.from.start - 1),
+        (mappingRange.from.end + 1 to seedRange.end)
+      )
+      val modifed = Seq((mappingRange.from.start + mappingRange.diff to mappingRange.from.end + mappingRange.diff))
+
+      (unmodified, modifed)
+    } else if (mappingRange.from.contains(seedRange.start) && mappingRange.from.contains(seedRange.end)) {
+      val unmodified = Seq.empty[NumericRange[Long]]
+      val modifed = Seq((seedRange.start + mappingRange.diff to seedRange.end + mappingRange.diff))
+
+      (unmodified, modifed)
+    } else if (seedRange.contains(mappingRange.from.start) && !seedRange.contains(mappingRange.from.end)) {
+      val unmodified = (seedRange.start to mappingRange.from.start - 1)
+      val modifed = (mappingRange.from.start + mappingRange.diff to seedRange.end + mappingRange.diff)
+
+      (Seq(unmodified), Seq(modifed))
+    } else if (seedRange.contains(mappingRange.from.end) && !seedRange.contains(mappingRange.from.start)) {
+      val unmodified = Seq((mappingRange.from.end + 1 to seedRange.end))
+      val modifed = Seq((seedRange.start + mappingRange.diff to mappingRange.from.end + mappingRange.diff))
+
+      (unmodified, modifed)
+    } else (Seq(seedRange), Seq.empty[NumericRange[Long]])
+  }
+
+  private def shiftRange(range: NumericRange[Long], diff: Long): NumericRange[Long] =
+    (range.start + diff to range.end + diff)
+}
+
+case class RangeBlock(name: String, mappingRanges: Seq[MappingRange])
+
+object RangeBlock {
+  def apply(mappingBlock: MappingBlock): RangeBlock =
+    RangeBlock(mappingBlock.name, mappingRanges = mappingBlock.mappings.map(MappingRange.apply))
+}
+
+case class MappingRange(from: NumericRange[Long], diff: Long)
+
+object MappingRange {
+  def apply(mapping: Mapping): MappingRange =
+    MappingRange(
+      from = (mapping.start to mapping.end),
+      diff = mapping.diff
+    )
 }
 
 case class MappingBlock(name: String, mappings: Seq[Mapping])
@@ -62,6 +132,10 @@ case class Mapping(start: Long, length: Long, diff: Long) {
     if (value >= start && value < (start + length)) Some(value + diff)
     else None
   }
+
+  def end: Long = start + (length - 1)
+  def destinationStart: Long = start + diff
+  def destinationEnd: Long = end + diff
 }
 
 object Mapping {
@@ -84,4 +158,8 @@ trait Day5 {
   def convert(seed: String, mappings: String): String
   def closestLocation(almanac: String): Long
   def closestLocationOfRanges(almanac: String): Long
+  def applyMappings(seedRanges: Seq[NumericRange[Long]], block: RangeBlock): Seq[NumericRange[Long]]
+  def applyMappingToSeedRange(mappingRange: MappingRange)(
+      seedRange: NumericRange[Long]
+  ): (Seq[NumericRange[Long]], Seq[NumericRange[Long]])
 }
