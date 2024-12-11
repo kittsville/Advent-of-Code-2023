@@ -7,7 +7,7 @@ object Main extends App {
 
   val input = multilineInput(limit = 2)
   println("Input captured, processing...")
-  val output = Day5Solution.closestLocationOfRanges(input)
+  val output = Day6Solution.multipliedRecordBeaters(input)
 
   println("Solution:")
   println(output)
