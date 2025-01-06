@@ -7,7 +7,7 @@ object Main extends App {
 
   val input = multilineInput(limit = 2)
   println("Input captured, processing...")
-  val output = Day6Solution.singleLargeRecordBeater(input)
+  val output = Day7Solution.totalWinnings(input)
 
   println("Solution:")
   println(output)
