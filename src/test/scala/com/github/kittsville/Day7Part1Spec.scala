@@ -1,6 +1,6 @@
 package com.github.kittsville
 
-class Day7Spec extends munit.FunSuite {
+class Day7Part1Spec extends munit.FunSuite {
   test("Returns the lowest score when all card labels are distinct") {
     assertEquals(Day7Solution.handType("23456"), 0)
   }
@@ -38,18 +38,20 @@ class Day7Spec extends munit.FunSuite {
   }
 
   test("Can compare two Hands by type") {
-    assertEquals(Hand("AAAAA").compare(Hand("AA8AA")), 1)
-    assertEquals(Hand("23332").compare(Hand("AA8AA")), -1)
+    assertEquals(PlayedHand.compareUnjokered(PlayedHand("AAAAA 2"), PlayedHand("AA8AA 3")), false)
+
+    assertEquals(PlayedHand.compareUnjokered(PlayedHand("AAAAA 2"), PlayedHand("AA8AA 2")), false)
+    assertEquals(PlayedHand.compareUnjokered(PlayedHand("23332 2"), PlayedHand("AA8AA 2")), true)
   }
 
   test("Can compare two hands by each card's strength") {
-    assertEquals(Hand("33332").compare(Hand("2AAAA")), 1)
-    assertEquals(Hand("77788").compare(Hand("77888")), -1)
+    assertEquals(PlayedHand.compareUnjokered(PlayedHand("33332 2"), PlayedHand("2AAAA 2")), false)
+    assertEquals(PlayedHand.compareUnjokered(PlayedHand("77788 2"), PlayedHand("77888 2")), true)
   }
 
   test("Fail if two hands are exactly equal") {
     interceptMessage[java.lang.IllegalArgumentException]("Exhausted cards from compared hands and all were equal") {
-      Hand("33332").compare(Hand("33332"))
+      PlayedHand.compareUnjokered(PlayedHand("33332 2"), PlayedHand("33332 2"))
     }
   }
 
