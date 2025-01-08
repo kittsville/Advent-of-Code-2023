@@ -42,7 +42,7 @@ class Day8Spec extends munit.FunSuite {
     )
     val expectedStepCount = 2
 
-    assertEquals(Day8Solution.countStepsToEnd(routeMap, Node("AAA"), 0), expectedStepCount)
+    assertEquals(Day8Solution.countStepsToEnd(routeMap, _.value == "ZZZ", Node("AAA"), 0), expectedStepCount)
   }
 
   test("Count the steps needed to reach the end of a more complex route") {
@@ -56,41 +56,39 @@ class Day8Spec extends munit.FunSuite {
     )
     val expectedStepCount = 6
 
-    assertEquals(Day8Solution.countStepsToEnd(routeMap, Node("AAA"), 0), expectedStepCount)
+    assertEquals(Day8Solution.countStepsToEnd(routeMap, _.value == "ZZZ", Node("AAA"), 0), expectedStepCount)
   }
 
   test("Parse a route map and count steps") {
     val raw = """RL
-                    |
-                    |AAA = (BBB, CCC)
-                    |BBB = (DDD, EEE)
-                    |CCC = (ZZZ, GGG)
-                    |DDD = (DDD, DDD)
-                    |EEE = (EEE, EEE)
-                    |GGG = (GGG, GGG)
-                    |ZZZ = (ZZZ, ZZZ)""".stripMargin
+                |
+                |AAA = (BBB, CCC)
+                |BBB = (DDD, EEE)
+                |CCC = (ZZZ, GGG)
+                |DDD = (DDD, DDD)
+                |EEE = (EEE, EEE)
+                |GGG = (GGG, GGG)
+                |ZZZ = (ZZZ, ZZZ)""".stripMargin
 
     assertEquals(Day8Solution.countSteps(raw), 2)
   }
 
-  test("Ghost edition: Count the steps needed to reach the end".only) {
-    val routeMap = RouteMap(
-      Seq(Left, Right),
-      Map(
-        Node("11A") -> Edges(Node("11B"), Node("XXX")),
-        Node("11B") -> Edges(Node("XXX"), Node("11Z")),
-        Node("11Z") -> Edges(Node("11B"), Node("XXX")),
-        Node("22A") -> Edges(Node("22B"), Node("XXX")),
-        Node("22B") -> Edges(Node("22C"), Node("22C")),
-        Node("22C") -> Edges(Node("22Z"), Node("22Z")),
-        Node("22Z") -> Edges(Node("22B"), Node("22B")),
-        Node("XXX") -> Edges(Node("XXX"), Node("XXX"))
-      )
-    )
-    val expectedStepCount = 6
+  test("Ghost edition: Count the steps needed to reach the end") {
+    val raw = """LR
+                |
+                |11A = (11B, XXX)
+                |11B = (XXX, 11Z)
+                |11Z = (11B, XXX)
+                |22A = (22B, XXX)
+                |22B = (22C, 22C)
+                |22C = (22Z, 22Z)
+                |22Z = (22B, 22B)
+                |XXX = (XXX, XXX)""".stripMargin
+
+    val expectedStepCount = 6L
 
     assertEquals(
-      Day8Solution.countGhostStepsToEnd(routeMap, routeMap.map.keys.filter(_.value.endsWith("A")).toSeq, 0),
+      Day8Solution.countGhostSteps(raw),
       expectedStepCount
     )
   }
