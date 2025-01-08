@@ -72,4 +72,26 @@ class Day8Spec extends munit.FunSuite {
 
     assertEquals(Day8Solution.countSteps(raw), 2)
   }
+
+  test("Ghost edition: Count the steps needed to reach the end".only) {
+    val routeMap = RouteMap(
+      Seq(Left, Right),
+      Map(
+        Node("11A") -> Edges(Node("11B"), Node("XXX")),
+        Node("11B") -> Edges(Node("XXX"), Node("11Z")),
+        Node("11Z") -> Edges(Node("11B"), Node("XXX")),
+        Node("22A") -> Edges(Node("22B"), Node("XXX")),
+        Node("22B") -> Edges(Node("22C"), Node("22C")),
+        Node("22C") -> Edges(Node("22Z"), Node("22Z")),
+        Node("22Z") -> Edges(Node("22B"), Node("22B")),
+        Node("XXX") -> Edges(Node("XXX"), Node("XXX"))
+      )
+    )
+    val expectedStepCount = 6
+
+    assertEquals(
+      Day8Solution.countGhostStepsToEnd(routeMap, routeMap.map.keys.filter(_.value.endsWith("A")).toSeq, 0),
+      expectedStepCount
+    )
+  }
 }

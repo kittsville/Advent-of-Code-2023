@@ -7,7 +7,7 @@ object Main extends App {
 
   val input = multilineInput(limit = 2)
   println("Input captured, processing...")
-  val output = Day8Solution.countSteps(input)
+  val output = Day8Solution.countGhostSteps(input)
 
   println("Solution:")
   println(output)
