@@ -2,7 +2,7 @@ package com.github.kittsville
 
 import scala.collection.immutable.NumericRange
 
-object Day6Solution {
+object Day6Solution extends Day6 {
   def recordBeatersCount(raceTime: Long, recordDistance: Long): Long =
     Range.Long(1, raceTime, 1).count(time => (time * (raceTime - time) > recordDistance))
 

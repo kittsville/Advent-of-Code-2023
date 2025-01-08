@@ -2,7 +2,7 @@ package com.github.kittsville
 
 import scala.jdk.StreamConverters._
 
-object Day4Solution {
+object Day4Solution extends Day4 {
   def points(scratchcards: String): Int =
     scratchcards.lines
       .toScala(LazyList)

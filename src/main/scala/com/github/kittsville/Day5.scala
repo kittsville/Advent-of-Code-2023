@@ -2,7 +2,7 @@ package com.github.kittsville
 
 import scala.collection.immutable.NumericRange
 
-object Day5Solution {
+object Day5Solution extends Day5 {
   def closestLocationOfRanges(almanac: String): Long = {
     val lines = almanac.linesIterator.toList
     val seeds = lines.head
@@ -152,7 +152,7 @@ case class InvalidMapping(raw: String)
     extends IllegalArgumentException(s"""Invalid mapping range. Expected 3 numbers got: "$raw"""")
 
 trait Day5 {
-  def convert(seed: String, mappings: String): String
+  def convert(seed: String, mappings: String): Long
   def closestLocation(almanac: String): Long
   def closestLocationOfRanges(almanac: String): Long
   def applyMappings(seedRanges: Seq[NumericRange[Long]], block: RangeBlock): Seq[NumericRange[Long]]

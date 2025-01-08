@@ -3,7 +3,7 @@ package com.github.kittsville
 import java.util.InputMismatchException
 import scala.annotation.tailrec
 
-object Day7Solution {
+object Day7Solution extends Day7 {
   def handType(raw: String): Int =
     Hand(raw).typeScore
 
