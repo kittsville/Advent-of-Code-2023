@@ -82,5 +82,3 @@ trait Day3 {
   def summedPartNumbers(schematic: String): Int
   def summedGearRatios(schematic: String): Int
 }
-
-case class Position(x: Int, y: Int)

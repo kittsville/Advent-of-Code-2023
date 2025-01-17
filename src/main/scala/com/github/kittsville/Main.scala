@@ -7,7 +7,7 @@ object Main extends App {
 
   val input = multilineInput(limit = 2)
   println("Input captured, processing...")
-  val output = Day9Solution.sumOfPreviousInSequences(input)
+  val output = Day10Solution.furthestDistance(input)
 
   println("Solution:")
   println(output)
