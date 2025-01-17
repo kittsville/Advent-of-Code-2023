@@ -1,5 +1,7 @@
 package com.github.kittsville
 
+import scala.collection.mutable
+
 object Day10Solution extends Day10 {
   def furthestDistance(maze: String): Int = {
     val parsedMaze = parseMaze(maze)
@@ -10,10 +12,12 @@ object Day10Solution extends Day10 {
       Position(x, y)
     }
 
-    def findLoopPositions(
-        currentPosition: Position,
-        previousPositions: Set[Position]
-    ): Set[Position] = {
+    val previousPositions = mutable.Set.empty[Position]
+    val unexploredPositions = mutable.Set(startPos)
+
+    val findConnectingPositions = (
+      currentPosition: Position
+    ) => {
       val surroundingPositions = Set(
         currentPosition.copy(x = currentPosition.x - 1), // up
         currentPosition.copy(x = currentPosition.x + 1), // down
@@ -21,16 +25,21 @@ object Day10Solution extends Day10 {
         currentPosition.copy(y = currentPosition.y + 1) // right
       )
       val unvisitedSurroundingPositions = surroundingPositions.filterNot(previousPositions.contains)
-      val loopContinuesTo = unvisitedSurroundingPositions.filter(positionsConnect(parsedMaze, currentPosition))
 
-      val newPreviousPositions = previousPositions + currentPosition
-
-      loopContinuesTo.headOption.fold(newPreviousPositions)(newPositon =>
-        findLoopPositions(loopContinuesTo.head, newPreviousPositions)
-      )
+      unvisitedSurroundingPositions.filter(positionsConnect(parsedMaze, currentPosition))
     }
 
-    findLoopPositions(startPos, Set(startPos)).size / 2
+    var stepsCounter = 0
+
+    while (unexploredPositions.nonEmpty && stepsCounter < sanityLimit) {
+      stepsCounter += 1
+      val nextPosition = unexploredPositions.head
+      unexploredPositions.remove(nextPosition)
+      unexploredPositions.addAll(findConnectingPositions(nextPosition))
+      previousPositions.add(nextPosition)
+    }
+
+    previousPositions.size / 2
   }
 
   def parseMaze(maze: String): Vector[Vector[Char]] = maze.linesIterator.flatMap {
@@ -85,6 +94,8 @@ object Day10Solution extends Day10 {
   private final case object Down extends Direction
   private final case object Left extends Direction
   private final case object Right extends Direction
+
+  private val sanityLimit = 99999999
 }
 
 trait Day10 {
