@@ -59,12 +59,6 @@ object Day10Solution extends Day10 {
       case _ => throw new IllegalArgumentException(s"Unable to identify if identical positions are connected: $a, $b")
     }
 
-    // parsedMaze.foreach(println)
-    // println(a, b)
-    // println(aToBDirection)
-    // println(aConnections)
-    // println(bConnections)
-
     aToBDirection match {
       case Down  => aConnections.contains(Down) && bConnections.contains(Up)
       case Up    => aConnections.contains(Up) && bConnections.contains(Down)
