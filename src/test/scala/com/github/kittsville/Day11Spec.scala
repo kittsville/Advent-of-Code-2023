@@ -1,18 +1,18 @@
 package com.github.kittsville
 
 class Day11Spec extends munit.FunSuite {
-  test("Converts a string representation of a galaxy to a list of galaxy coordinates") {
-    val universe = """...#......
-                     |.......#..
-                     |#.........
-                     |..........
-                     |......#...
-                     |.#........
-                     |.........#
-                     |..........
-                     |.......#..
-                     |#...#.....""".stripMargin
+  val exampleUniverse = """...#......
+                            |.......#..
+                            |#.........
+                            |..........
+                            |......#...
+                            |.#........
+                            |.........#
+                            |..........
+                            |.......#..
+                            |#...#.....""".stripMargin
 
+  test("Converts a string representation of a galaxy to a list of galaxy coordinates") {
     val expectedPositions = Set(
       Position(3, 0),
       Position(7, 1),
@@ -25,15 +25,28 @@ class Day11Spec extends munit.FunSuite {
       Position(4, 9)
     )
 
-    assertEquals(Day11Solution.parseUniverse(universe), expectedPositions)
+    assertEquals(Day11Solution.parseUniverse(exampleUniverse), expectedPositions)
   }
 
   test("Expands a basic universe where there is no effect") {
-    assertEquals(Day11Solution.expandUniverse(Set(Position(0, 0))), Set(Position(0, 0)))
+    assertEquals(Day11Solution.expandUniverse(Set(Position(0, 0)), 2), Set(Position(0, 0)))
   }
 
   test("Expands a basic universe where 1 galaxy is moved") {
-    assertEquals(Day11Solution.expandUniverse(Set(Position(1, 1))), Set(Position(2, 2)))
+    assertEquals(Day11Solution.expandUniverse(Set(Position(1, 1)), 2), Set(Position(2, 2)))
+  }
+
+  test("Expands a basic universe where 1 galaxy is moved by a factor of 3") {
+    assertEquals(Day11Solution.expandUniverse(Set(Position(2, 2)), 3), Set(Position(6, 6)))
+  }
+
+  test("Expands a complex universe by a 10x factor, where multiple galaxies are moved") {
+    assertEquals(
+      Day11Solution.sumDistancesBetweenPairs(
+        Day11Solution.expandUniverse(Day11Solution.parseUniverse(exampleUniverse), 10)
+      ),
+      1030L
+    )
   }
 
   test("Expands a complex universe where multiple galaxies are moved") {
@@ -50,7 +63,7 @@ class Day11Spec extends munit.FunSuite {
       Position(3, 8),
       Position(8, 3)
     )
-    assertEquals(Day11Solution.expandUniverse(universe), expectedExpandedUniverse)
+    assertEquals(Day11Solution.expandUniverse(universe, 2), expectedExpandedUniverse)
   }
 
   test("Sums the total distances between galaxies in a basic universe") {
@@ -60,7 +73,7 @@ class Day11Spec extends munit.FunSuite {
       Position(4, 4)
     )
 
-    assertEquals(Day11Solution.sumDistancesBetweenPairs(universe), 6)
+    assertEquals(Day11Solution.sumDistancesBetweenPairs(universe), 6L)
   }
 
   test("Sums the total distances between galaxies when they exist on the same Y axis") {
@@ -70,7 +83,7 @@ class Day11Spec extends munit.FunSuite {
       Position(1, 5)
     )
 
-    assertEquals(Day11Solution.sumDistancesBetweenPairs(universe), 3)
+    assertEquals(Day11Solution.sumDistancesBetweenPairs(universe), 3L)
   }
 
   test("Sums the total distances between galaxies when they exist on the same X axis") {
@@ -80,7 +93,7 @@ class Day11Spec extends munit.FunSuite {
       Position(5, 1)
     )
 
-    assertEquals(Day11Solution.sumDistancesBetweenPairs(universe), 3)
+    assertEquals(Day11Solution.sumDistancesBetweenPairs(universe), 3L)
   }
 
   test("Sums the total distances between multiple galaxies") {
@@ -91,7 +104,7 @@ class Day11Spec extends munit.FunSuite {
       Position(5, 1)
     )
 
-    assertEquals(Day11Solution.sumDistancesBetweenPairs(universe), 16)
+    assertEquals(Day11Solution.sumDistancesBetweenPairs(universe), 16L)
   }
 
   test("Sums the total distances between galaxies in a complex universe") {
@@ -109,6 +122,6 @@ class Day11Spec extends munit.FunSuite {
                         |#....#.......""".stripMargin
     val universe = Day11Solution.parseUniverse(rawUniverse)
 
-    assertEquals(Day11Solution.sumDistancesBetweenPairs(universe), 374)
+    assertEquals(Day11Solution.sumDistancesBetweenPairs(universe), 374L)
   }
 }
