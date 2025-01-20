@@ -3,21 +3,31 @@ package com.github.kittsville
 import cats.syntax.all._
 
 object Day12Solution extends Day12 {
-  def sumRowPermutations(raw: String): Int = raw.linesIterator
+  def sumRowPermutations(raw: String): Int = parseAndSum(raw, 1)
+  def sumUnfoldedRowPermutations(raw: String): Int = parseAndSum(raw, 5)
+
+  private def parseAndSum(raw: String, unfoldFactor: Int): Int = raw.linesIterator
     .map {
       case ""  => 0
-      case row => countPossiblePermutations(row)
+      case row => countPossiblePermutations(row, unfoldFactor)
     }
     .foldLeft(0)(_ + _)
 
-  def countPossiblePermutations(line: String): Int = {
+  def countPossiblePermutations(line: String, unfoldFactor: Int): Int = {
     val (report, groupedReport) = line.split(' ').toList match {
-      case rawReport :: rawGroupedReport :: Nil => (rawReport.toCharArray(), rawGroupedReport.split(",").map(_.toInt))
-      case _                                    => throw new IllegalArgumentException(s"Invalid line: '$line'")
+      case rawReport :: rawGroupedReport :: Nil =>
+        (
+          multiplyString(rawReport, "?", unfoldFactor).toCharArray(),
+          multiplyString(rawGroupedReport, ",", unfoldFactor).split(",").map(_.toInt)
+        )
+      case _ => throw new IllegalArgumentException(s"Invalid line: '$line'")
     }
 
     recursivelyCountPossibilities(report.toList, groupedReport.toList, None, "")
   }
+
+  private def multiplyString(input: String, sepator: String, unfoldFactor: Int): String =
+    List.fill(unfoldFactor)(input).mkString(sepator)
 
   def recursivelyCountPossibilities(
       report: List[Char],
@@ -75,5 +85,6 @@ object Day12Solution extends Day12 {
 
 trait Day12 {
   def sumRowPermutations(raw: String): Int
-  def countPossiblePermutations(line: String): Int
+  def sumUnfoldedRowPermutations(raw: String): Int
+  def countPossiblePermutations(line: String, unfoldFactor: Int): Int
 }
