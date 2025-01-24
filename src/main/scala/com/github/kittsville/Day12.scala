@@ -40,6 +40,7 @@ object Day12Solution extends Day12 {
         1
       } else 0
     } {
+      case _ if impossibleFuture(report, groups)              => 0
       case _ if restriction.contains(NoGap) && groups.isEmpty => 0
       case '#' if groups.nonEmpty && !restriction.contains(GapRequired) => {
         val (remainingGroups, nextRestrictions) = decrementList(groups)
@@ -68,6 +69,9 @@ object Day12Solution extends Day12 {
         throw new IllegalArgumentException(s"Unrecognised spring report symbol '$invalid'. Must be one of [#.?]")
     }
   }
+
+  private def impossibleFuture(report: List[Char], groups: List[Int]): Boolean =
+    groups.sum > report.count(char => char == '?' || char == '#')
 
   private def decrementList(list: List[Int]): (List[Int], Restriction) = {
     list match {
