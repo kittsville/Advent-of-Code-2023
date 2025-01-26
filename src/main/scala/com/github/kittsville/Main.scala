@@ -7,7 +7,7 @@ object Main extends App {
 
   val input = multilineInput(limit = 2)
   println("Input captured, processing...")
-  val output = Day12Solution.sumUnfoldedRowPermutations(input)
+  val output = Day13Solution.getNotesSummary(input)
 
   println("Solution:")
   println(output)
