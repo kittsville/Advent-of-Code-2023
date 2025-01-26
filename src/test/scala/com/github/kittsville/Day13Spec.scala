@@ -55,4 +55,53 @@ class Day13Spec extends munit.FunSuite {
     val input = s"$verticalReflectionPoint\n\n$horizontalReflectionPoint\n\n\n"
     assertEquals(Day13Solution.getNotesSummary(input), 405)
   }
+
+  test("Two pattern rows of different length are not equal") {
+    assertEquals(Day13Solution.equal("##..#######..", "...#....."), Day13.NotEqual)
+  }
+
+  test("Two pattern rows of entirely different content are not equal") {
+    assertEquals(Day13Solution.equal("##..#######..", "#.#.##.#....."), Day13.NotEqual)
+  }
+
+  test("Two pattern rows of identical content are equal") {
+    assertEquals(Day13Solution.equal("##..#######..", "##..#######.."), Day13.Equal)
+  }
+
+  test("Two pattern rows differing by one character are smudged") {
+    assertEquals(Day13Solution.equal("##..#######..", "##..###.###.."), Day13.Smudged)
+  }
+
+  test("Finds the smudged horizontal reflection point") {
+    assertEquals(Day13Solution.getSmudgedHorizontalReflectionPoint(verticalReflectionPoint), Some(3))
+  }
+
+  test("Finds the smudged vertical reflection point") {
+    val smugedVertical =
+      """#..#..##.
+        |..#.##.#.
+        |##......#
+        |##......#
+        |..#.##.#.
+        |..##..##.
+        |#.#.##.#.""".stripMargin
+    assertEquals(Day13Solution.getSmudgedVerticalReflectionPoint(smugedVertical), Some(5))
+  }
+
+  test("Doesn't find a smuged horizontal reflection point if the reflection is un-smudged") {
+    val horizontalWithNoSmudge =
+      """#...##..#
+        |#...##..#
+        |..##..###
+        |#####.##.
+        |#####....
+        |..##..###
+        |#....#..#""".stripMargin
+
+    assertEquals(Day13Solution.getSmudgedHorizontalReflectionPoint(horizontalWithNoSmudge), None)
+  }
+
+  test("Doesn't find a smuged vertical reflection point if the reflection is un-smudged") {
+    assertEquals(Day13Solution.getSmudgedVerticalReflectionPoint(verticalReflectionPoint), None)
+  }
 }
