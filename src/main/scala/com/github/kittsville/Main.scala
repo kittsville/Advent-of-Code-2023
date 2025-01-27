@@ -5,9 +5,9 @@ import scala.io.StdIn
 object Main extends App {
   println("Puzzle input:")
 
-  val input = multilineInput(limit = 2)
+  val input = multilineInput(limit = 2).stripLineEnd
   println("Input captured, processing...")
-  val output = Day13Solution.getSmudgedNotesSummary(input)
+  val output = Day14Solution.rolledLoad(input)
 
   println("Solution:")
   println(output)
