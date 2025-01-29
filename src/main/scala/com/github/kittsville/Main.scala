@@ -8,7 +8,7 @@ object Main extends App {
 
   val input = multilineInput(limit = 2).stripLineEnd
   println("Input captured, processing...")
-  val output = Day14Solution.rolledLoad(input)
+  val output = Day15Solution.sumStepHashes(input)
 
   println("Solution:")
   println(output)
